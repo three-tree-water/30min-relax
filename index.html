@@ -642,13 +642,13 @@
   </div>
 
   <script>
-    /* ========================================================
+/* ========================================================
        ★ Google 試算表靜默自動存檔設定
     ======================================================== */
-    // 請將下方引號內換成你在 Google Apps Script 取得的 Web 應用程式網址：
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxO3oW8gP8ZMb4Ym5QWXZDW3PFjmwp2u8Yfk5FAkdYPx3IhhDqJYYXy0jbQAWQzxTR/exec";
+    // 請確認此網址結尾必須是 /exec
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/你的部署ID/exec";
 
-    // 產生或讀取該訪客本次造訪的專屬隨機匿名 ID（不會重複建列）
+    // 產生或讀取該訪客本次造訪的專屬匿名識別碼
     let sessionId = sessionStorage.getItem('sanmushui_session_id');
     if (!sessionId) {
       sessionId = 'Guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6);
@@ -660,13 +660,17 @@
     let autoSaveTimer = null;
 
     function triggerAutoSave() {
-      const step1Val = document.getElementById('step1-input').value.trim();
-      const step10Val = document.getElementById('step10-input').value.trim();
+      const step1El = document.getElementById('step1-input');
+      const step10El = document.getElementById('step10-input');
+      if (!step1El || !step10El) return;
 
-      // 若完全無內容或內容沒變動，則不發送請求
+      const step1Val = step1El.value.trim();
+      const step10Val = step10El.value.trim();
+
+      // 若完全無內容或內容未變動，則不發送
       if (!step1Val && !step10Val) return;
       if (step1Val === lastSavedStep1 && step10Val === lastSavedStep10) return;
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("請將你的")) return;
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("你的部署ID")) return;
 
       const payload = {
         sessionId: sessionId,
@@ -674,7 +678,7 @@
         step10: step10Val
       };
 
-      // 靜默在背景傳送到 Google 試算表（no-cors 確保不被瀏覽器擋下）
+      // 使用 text/plain，徹底避開瀏覽器跨網域 OPTIONS 預檢阻擋
       fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -685,12 +689,13 @@
       }).then(() => {
         lastSavedStep1 = step1Val;
         lastSavedStep10 = step10Val;
+        console.log("三木水：已自動同步至試算表");
       }).catch(err => {
-        console.error("Auto-save sync error:", err);
+        console.error("同步失敗原因：", err);
       });
     }
 
-    // 監聽輸入：滑鼠移開(blur)立刻存檔；打字停頓 2 秒(debounce)自動存檔
+    // 監聽：離開輸入框(blur)立刻存檔；打字停頓 2 秒(input debounce)自動存檔
     ['step1-input', 'step10-input'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
