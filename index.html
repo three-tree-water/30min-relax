@@ -14,7 +14,7 @@
     /* --- 依據山水相片精準調配色彩（清澈、黛綠、湖青、高對比） --- */
     :root {
       --mist-sky: #EDF5F7;           /* 清晨雲霧淺青白（背景主色，明朗通透） */
-      --card-pure-white: #FFFFFF;    /* 純淨白卡片（提供最高的文字閱讀對比度） */
+      --card-pure-white: #FFFFFF;    /* 純淨白卡片（提供最高文字閱讀對比） */
       --lake-soft-tint: #E2ECEE;     /* 湖水微光淺青底（範例、筆記、計時框） */
       --deep-forest-ink: #112527;    /* 深山黛碧炭黑（主文字：超高對比、字字清晰） */
       --text-sub: #2B4547;           /* 沉穩青岩次要字 */
@@ -52,7 +52,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 1; /* 位於背景層，不影響文字閱讀與點擊 */
+      z-index: 1;
     }
 
     /* 頂部湖水青漸層進度條 */
@@ -70,7 +70,7 @@
     /* 網頁主容器 */
     .container {
       position: relative;
-      z-index: 2; /* 位於落葉之上，保持文字清晰度 */
+      z-index: 2;
       max-width: 680px;
       margin: 0 auto;
       padding: 0 24px;
@@ -159,7 +159,6 @@
       will-change: opacity, transform, filter;
     }
 
-    /* 第十三步錨點平滑緩衝區間距 */
     #step-13 {
       scroll-margin-top: 8vh;
     }
@@ -170,7 +169,7 @@
       filter: blur(0);
     }
 
-    /* 步驟白底微透光卡片 */
+    /* 步驟白底卡片 */
     .card {
       background: var(--card-pure-white);
       border: 1px solid var(--border-teal);
@@ -221,7 +220,7 @@
       line-height: 2.2;
     }
 
-    /* 跳轉至第 13 步的特色連結按鈕樣式 */
+    /* 直達第 13 步連結 */
     .jump-link {
       display: inline-flex;
       align-items: center;
@@ -247,7 +246,7 @@
       box-shadow: 0 4px 12px rgba(30, 88, 94, 0.2);
     }
 
-    /* 隨手私密筆記輸入框 */
+    /* 隨手筆記輸入框（清楚標記 ID） */
     .note-input {
       width: 100%;
       min-height: 110px;
@@ -379,7 +378,6 @@
       color: var(--lake-teal);
     }
 
-    /* 手機畫面自適應 */
     @media (max-width: 640px) {
       html {
         font-size: 16px;
@@ -410,7 +408,7 @@
 
   <div class="container">
 
-    <!-- 頁面開頭（品牌、標題、說明） -->
+    <!-- 頁面開頭 -->
     <header class="hero">
       <img src="logo-02.png" alt="三木水 Logo" class="brand-logo" onerror="this.style.display='none'">
       
@@ -425,7 +423,7 @@
       <div class="scroll-hint">慢慢往下滑動開始</div>
     </header>
 
-    <!-- 步驟 1 -->
+    <!-- 步驟 1 (已配置 step1-input) -->
     <section class="step-section">
       <div class="card">
         <span class="step-number">STEP 01</span>
@@ -435,7 +433,7 @@
           <strong>舉例：</strong><br>
           現在我正面臨跟伴侶起衝突的狀況，我們正在冷戰，但我不知道該不該先密他，因為我覺得密他的話，可能代表我錯了或是我輸了……
         </div>
-        <textarea class="note-input" placeholder="你可以在這裡寫下你目前的困難，或者寫在手邊的紙筆上……"></textarea>
+        <textarea id="step1-input" class="note-input" placeholder="你可以在這裡寫下你目前的困難，或者寫在手邊的紙筆上……"></textarea>
       </div>
     </section>
 
@@ -533,7 +531,7 @@
       </div>
     </section>
 
-    <!-- 步驟 10（含直達第 13 步跳轉連結） -->
+    <!-- 步驟 10 (已配置 step10-input 與直達 13 步連結) -->
     <section class="step-section">
       <div class="card">
         <span class="step-number">STEP 10</span>
@@ -545,7 +543,7 @@
             <a href="#step-13" class="jump-link">跳到第 13 步 →</a>）
           </span>
         </p>
-        <textarea class="note-input" placeholder="在這裡記下你對秘密的想法與感受……"></textarea>
+        <textarea id="step10-input" class="note-input" placeholder="在這裡記下你對秘密的想法與感受……"></textarea>
       </div>
     </section>
 
@@ -571,7 +569,7 @@
       </div>
     </section>
 
-    <!-- 步驟 13（設定錨點 id="step-13"） -->
+    <!-- 步驟 13 -->
     <section class="step-section" id="step-13">
       <div class="card">
         <span class="step-number">STEP 13</span>
@@ -642,13 +640,12 @@
   </div>
 
   <script>
-/* ========================================================
-       ★ Google 試算表靜默自動存檔設定
+    /* ========================================================
+       ★ Google 試算表靜默自動存檔設定（已綁定您的專屬部署 ID）
     ======================================================== */
-    // 請確認此網址結尾必須是 /exec
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxO3oW8gP8ZMb4Ym5QWXZDW3PFjmwp2u8Yfk5FAkdYPx3IhhDqJYYXy0jbQAWQzxTR/exec";
 
-    // 產生或讀取該訪客本次造訪的專屬匿名識別碼
+    // 產生或讀取該訪客本次造訪的專屬隨機匿名 ID
     let sessionId = sessionStorage.getItem('sanmushui_session_id');
     if (!sessionId) {
       sessionId = 'Guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6);
@@ -659,53 +656,64 @@
     let lastSavedStep10 = "";
     let autoSaveTimer = null;
 
+    // 雙重安全抓取：優先抓取 ID，若沒有則自動抓取前兩組輸入框
+    function getNoteInputs() {
+      const textareas = document.querySelectorAll('textarea');
+      const step1El = document.getElementById('step1-input') || textareas[0];
+      const step10El = document.getElementById('step10-input') || textareas[1];
+      return { step1El, step10El };
+    }
+
     function triggerAutoSave() {
-      const step1El = document.getElementById('step1-input');
-      const step10El = document.getElementById('step10-input');
-      if (!step1El || !step10El) return;
+      const { step1El, step10El } = getNoteInputs();
+      if (!step1El && !step10El) return;
 
-      const step1Val = step1El.value.trim();
-      const step10Val = step10El.value.trim();
+      const step1Val = step1El ? step1El.value.trim() : "";
+      const step10Val = step10El ? step10El.value.trim() : "";
 
-      // 若完全無內容或內容未變動，則不發送
+      // 內容完全為空或無變動則不浪費網路發送
       if (!step1Val && !step10Val) return;
       if (step1Val === lastSavedStep1 && step10Val === lastSavedStep10) return;
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("AKfycbwxO3oW8gP8ZMb4Ym5QWXZDW3PFjmwp2u8Yfk5FAkdYPx3IhhDqJYYXy0jbQAWQzxTR")) return;
 
       const payload = {
         sessionId: sessionId,
         step1: step1Val,
         step10: step10Val
       };
-      
-a 打包，100% 保證中文與多行文字完整送達 Google 試算表
-      const formData = new FormData();
-      formData.append('sessionId', sessionId);
-      formData.append('step1', step1Val);
-      formData.append('step10', step10Val);
 
-      fetch(GOOGLE_SCRIPT_URL, {
+      // 雙通道相容：Query 參數與 JSON 內容同步發送，確保任何版本 Google Apps Script 都能接住
+      const postUrl = `${GOOGLE_SCRIPT_URL}?sessionId=${encodeURIComponent(sessionId)}&step1=${encodeURIComponent(step1Val)}&step10=${encodeURIComponent(step10Val)}`;
+
+      fetch(postUrl, {
         method: 'POST',
         mode: 'no-cors',
-        body: formData
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
       }).then(() => {
         lastSavedStep1 = step1Val;
         lastSavedStep10 = step10Val;
-        console.log("三木水：步驟內容已自動存入 Google 試算表！");
+        console.log("三木水：已自動同步至試算表", { step1: step1Val, step10: step10Val });
       }).catch(err => {
-        console.error("同步失敗：", err);
+        console.error("同步異常：", err);
+      });
+    }
 
-    // 監聽：離開輸入框(blur)立刻存檔；打字停頓 2 秒(input debounce)自動存檔
-    ['step1-input', 'step10-input'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('blur', triggerAutoSave);
-        el.addEventListener('input', () => {
-          clearTimeout(autoSaveTimer);
-          autoSaveTimer = setTimeout(triggerAutoSave, 2000);
-        });
-      }
+    // 監聽：離開輸入框 (blur) 或停頓 2 秒，自動在背景同步
+    window.addEventListener('DOMContentLoaded', () => {
+      const { step1El, step10El } = getNoteInputs();
+      [step1El, step10El].forEach(el => {
+        if (el) {
+          el.addEventListener('blur', triggerAutoSave);
+          el.addEventListener('input', () => {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(triggerAutoSave, 2000);
+          });
+        }
+      });
     });
+
     /* ========================================================
        1. 滾動進度條與滾動淡入 (IntersectionObserver)
     ======================================================== */
@@ -735,7 +743,7 @@ a 打包，100% 保證中文與多行文字完整送達 Google 試算表
       revealObserver.observe(el);
     });
 
-    // 錨點快速點擊支援：點擊跳轉時立即顯示目標，無延遲與閃爍
+    // 錨點平滑跳轉支援
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         const targetId = this.getAttribute('href');
@@ -747,7 +755,7 @@ a 打包，100% 保證中文與多行文字完整送達 Google 試算表
     });
 
     /* ========================================================
-       2. 滾動感應微風與落葉粒子系統 (Leaves & Breeze Simulation)
+       2. 滾動感應微風與落葉粒子系統 (Leaves & Breeze)
     ======================================================== */
     const canvas = document.getElementById('leaves-canvas');
     const ctx = canvas.getContext('2d');
@@ -760,7 +768,6 @@ a 打包，100% 保證中文與多行文字完整送達 Google 試算表
       height = canvas.height = window.innerHeight;
     });
 
-    // 監聽滾動以動態增強微風風速 (Wind Velocity)
     let extraWind = 0;
     let lastScrollY = window.scrollY;
 
@@ -771,12 +778,11 @@ a 打包，100% 保證中文與多行文字完整送達 Google 試算表
       lastScrollY = currentScrollY;
     }, { passive: true });
 
-    // 森林湖畔葉片調色盤
     const leafColors = [
-      'rgba(40, 84, 67, 0.28)',    // 深松墨綠
-      'rgba(30, 88, 94, 0.25)',    // 湖水黛青
-      'rgba(76, 117, 98, 0.22)',   // 嫩葉青綠
-      'rgba(123, 165, 155, 0.24)'  // 晨嵐水霧綠
+      'rgba(40, 84, 67, 0.28)',
+      'rgba(30, 88, 94, 0.25)',
+      'rgba(76, 117, 98, 0.22)',
+      'rgba(123, 165, 155, 0.24)'
     ];
 
     class Leaf {
@@ -843,7 +849,7 @@ a 打包，100% 保證中文與多行文字完整送達 Google 試算表
     renderLeaves();
 
     /* ========================================================
-       3. 純視覺無聲發呆計時器（零音效，安靜陪伴）
+       3. 純視覺無聲發呆計時器
     ======================================================== */
     let timerInterval = null;
     let remainingSeconds = 300;
