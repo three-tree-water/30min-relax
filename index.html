@@ -643,6 +643,65 @@
 
   <script>
     /* ========================================================
+       ★ Google 試算表靜默自動存檔設定
+    ======================================================== */
+    // 請將下方引號內換成你在 Google Apps Script 取得的 Web 應用程式網址：
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxO3oW8gP8ZMb4Ym5QWXZDW3PFjmwp2u8Yfk5FAkdYPx3IhhDqJYYXy0jbQAWQzxTR/exec";
+
+    // 產生或讀取該訪客本次造訪的專屬隨機匿名 ID（不會重複建列）
+    let sessionId = sessionStorage.getItem('sanmushui_session_id');
+    if (!sessionId) {
+      sessionId = 'Guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6);
+      sessionStorage.setItem('sanmushui_session_id', sessionId);
+    }
+
+    let lastSavedStep1 = "";
+    let lastSavedStep10 = "";
+    let autoSaveTimer = null;
+
+    function triggerAutoSave() {
+      const step1Val = document.getElementById('step1-input').value.trim();
+      const step10Val = document.getElementById('step10-input').value.trim();
+
+      // 若完全無內容或內容沒變動，則不發送請求
+      if (!step1Val && !step10Val) return;
+      if (step1Val === lastSavedStep1 && step10Val === lastSavedStep10) return;
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("請將你的")) return;
+
+      const payload = {
+        sessionId: sessionId,
+        step1: step1Val,
+        step10: step10Val
+      };
+
+      // 靜默在背景傳送到 Google 試算表（no-cors 確保不被瀏覽器擋下）
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        lastSavedStep1 = step1Val;
+        lastSavedStep10 = step10Val;
+      }).catch(err => {
+        console.error("Auto-save sync error:", err);
+      });
+    }
+
+    // 監聽輸入：滑鼠移開(blur)立刻存檔；打字停頓 2 秒(debounce)自動存檔
+    ['step1-input', 'step10-input'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('blur', triggerAutoSave);
+        el.addEventListener('input', () => {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = setTimeout(triggerAutoSave, 2000);
+        });
+      }
+    });
+    /* ========================================================
        1. 滾動進度條與滾動淡入 (IntersectionObserver)
     ======================================================== */
     window.addEventListener('scroll', () => {
